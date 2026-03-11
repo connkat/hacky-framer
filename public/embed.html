@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Google Reviews Widget</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background: #f9fafb;
+        padding: 1rem;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 1rem 1rem 0 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .header h1 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+      }
+
+      .header-info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        align-items: center;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .rating-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .rating-number {
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+
+      .stars {
+        display: flex;
+        gap: 0.125rem;
+      }
+
+      .star {
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: #fbbf24;
+      }
+
+      .star.empty {
+        fill: #e5e7eb;
+      }
+
+      .reviews-container {
+        background: #f3f4f6;
+        padding: 2rem;
+        border-radius: 0 0 1rem 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .review-card {
+        background: white;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s;
+      }
+
+      .review-card:hover {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+      }
+
+      .review-header {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .review-avatar {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+
+      .avatar-placeholder {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        background: #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .avatar-icon {
+        width: 1.5rem;
+        height: 1.5rem;
+        fill: #6b7280;
+      }
+
+      .review-info {
+        flex: 1;
+      }
+
+      .review-author {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+
+      .author-name {
+        font-weight: 600;
+        color: #111827;
+      }
+
+      .review-time {
+        font-size: 0.875rem;
+        color: #6b7280;
+      }
+
+      .review-stars {
+        display: flex;
+        gap: 0.125rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .review-star {
+        width: 1rem;
+        height: 1rem;
+      }
+
+      .review-text {
+        color: #374151;
+        line-height: 1.625;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 3rem;
+      }
+
+      .spinner {
+        width: 3rem;
+        height: 3rem;
+        border: 0.25rem solid #e5e7eb;
+        border-top-color: #2563eb;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .error {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #dc2626;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        text-align: center;
+      }
+
+      @media (max-width: 640px) {
+        .header h1 {
+          font-size: 1.5rem;
+        }
+
+        .header-info {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app" class="container">
+      <div class="loading">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <script>
+      // Configuration
+      const API_URL = window.location.origin + "/api/reviews";
+
+      // SVG Icons as strings
+      const starIcon = `<svg class="star" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+      const userIcon = `<svg class="avatar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
+
+      function renderStars(rating, className = "star") {
+        let html = "";
+        for (let i = 0; i < 5; i++) {
+          const filled = i < rating;
+          html += starIcon.replace(
+            'class="star"',
+            `class="${className}${filled ? "" : " empty"}"`,
+          );
+        }
+        return html;
+      }
+
+      function renderReviewCard(review) {
+        const avatar = review.profile_photo_url
+          ? `<img src="${review.profile_photo_url}" alt="${review.author_name}" class="review-avatar">`
+          : `<div class="avatar-placeholder">${userIcon}</div>`;
+
+        return `
+                <div class="review-card">
+                    <div class="review-header">
+                        ${avatar}
+                        <div class="review-info">
+                            <div class="review-author">
+                                <span class="author-name">${review.author_name}</span>
+                                <span class="review-time">${review.relative_time_description}</span>
+                            </div>
+                            <div class="review-stars">
+                                ${renderStars(review.rating, "review-star")}
+                            </div>
+                            <p class="review-text">${review.text}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+      }
+
+      function renderContent(data) {
+        const reviewsHtml = data.reviews.map(renderReviewCard).join("");
+
+        return `
+                <div class="header">
+                    <h1>${data.name}</h1>
+                    <div class="header-info">
+                        <div class="rating-info">
+                            <div class="stars">${renderStars(Math.round(data.rating))}</div>
+                            <span class="rating-number">${data.rating.toFixed(1)}</span>
+                        </div>
+                        <div>${data.totalReviews.toLocaleString()} reviews</div>
+                        ${data.address ? `<div>📍 ${data.address}</div>` : ""}
+                    </div>
+                </div>
+                <div class="reviews-container">
+                    ${reviewsHtml || '<p style="text-align: center; color: #6b7280;">No reviews available</p>'}
+                </div>
+            `;
+      }
+
+      async function loadReviews() {
+        const app = document.getElementById("app");
+
+        try {
+          const response = await fetch(API_URL);
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch reviews");
+          }
+
+          const data = await response.json();
+          app.innerHTML = renderContent(data);
+        } catch (error) {
+          app.innerHTML = `
+                    <div class="error">
+                        <strong>Error loading reviews:</strong> ${error.message}
+                    </div>
+                `;
+        }
+      }
+
+      // Load reviews when page loads
+      loadReviews();
+    </script>
+  </body>
+</html>
