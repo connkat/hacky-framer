@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { BusinessData } from "@/types/review";
 import ReviewCard from "./ReviewCard";
-import { Star, MapPin, Users, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ReviewsDisplayProps {
   placeId: string;
@@ -113,32 +113,7 @@ export default function ReviewsDisplay({
 
   return (
     <div className={`w-full ${compact ? "max-w-xl" : "max-w-2xl"} mx-auto`}>
-      <div className="bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-t-2xl p-6 shadow-lg">
-        <h1 className="text-3xl font-bold mb-3">{data.name}</h1>
-
-        <div className="flex flex-wrap items-center gap-6 text-blue-50">
-          <div className="flex items-center gap-2">
-            <Star className="w-5 h-5 fill-yellow-300 text-yellow-300" />
-            <span className="text-2xl font-semibold">
-              {data.rating.toFixed(1)}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Users className="w-5 h-5" />
-            <span>{data.totalReviews.toLocaleString()} reviews</span>
-          </div>
-
-          {data.address && (
-            <div className="flex items-center gap-2">
-              <MapPin className="w-5 h-5" />
-              <span>{data.address}</span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="bg-gray-50 rounded-b-2xl p-8 shadow-lg">
+      <div className="bg-gray-50 rounded-2xl p-8 shadow-lg">
         {data.reviews.length === 0 ? (
           <p className="text-center text-gray-500 py-8">No reviews available</p>
         ) : (
