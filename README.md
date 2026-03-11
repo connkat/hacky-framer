@@ -37,7 +37,7 @@ You need a Google Place ID for your business:
 
 1. Visit [Google Place ID Finder](https://developers.google.com/maps/documentation/places/web-service/place-id)
 2. Search for your business
-3. Copy the Place ID (e.g., `ChIJN1t_tDeuEmsRUsoyG83frY4`)
+3. Copy the Place ID
 
 ### 4. Configure Environment Variables
 
