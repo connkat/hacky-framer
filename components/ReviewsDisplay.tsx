@@ -113,7 +113,7 @@ export default function ReviewsDisplay({
 
   return (
     <div className={`w-full ${compact ? "max-w-xl" : "max-w-2xl"} mx-auto`}>
-      <div className="bg-gray-50 rounded-2xl p-8 shadow-lg">
+      <div className="bg-white rounded-2xl p-8 shadow-lg">
         {data.reviews.length === 0 ? (
           <p className="text-center text-gray-500 py-8">No reviews available</p>
         ) : (
