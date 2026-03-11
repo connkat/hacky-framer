@@ -10,7 +10,7 @@ export default function ReviewCard({ review }: ReviewCardProps) {
   return (
     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
       <div className="flex items-start gap-4">
-        <div className="flex-shrink-0">
+        <div className="hidden md:block flex-shrink-0">
           {review.profile_photo_url ? (
             <Image
               src={review.profile_photo_url}
@@ -27,7 +27,7 @@ export default function ReviewCard({ review }: ReviewCardProps) {
         </div>
 
         <div className="flex-1">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2 gap-1">
             <h3 className="font-semibold text-gray-900">
               {review.author_name}
             </h3>
