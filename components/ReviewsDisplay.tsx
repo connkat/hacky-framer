@@ -141,14 +141,14 @@ export default function ReviewsDisplay({
               <>
                 <button
                   onClick={prevReview}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors z-10"
+                  className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors z-10 items-center justify-center"
                   aria-label="Previous review"
                 >
                   <ChevronLeft className="w-6 h-6 text-gray-700" />
                 </button>
                 <button
                   onClick={nextReview}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors z-10"
+                  className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors z-10 items-center justify-center"
                   aria-label="Next review"
                 >
                   <ChevronRight className="w-6 h-6 text-gray-700" />
