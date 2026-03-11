@@ -49,7 +49,9 @@ export default function ReviewCard({ review }: ReviewCardProps) {
             ))}
           </div>
 
-          <p className="text-gray-700 leading-relaxed">{review.text}</p>
+          <p className="text-gray-700 leading-relaxed line-clamp-4">
+            {review.text}
+          </p>
         </div>
       </div>
     </div>

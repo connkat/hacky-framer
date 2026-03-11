@@ -77,19 +77,86 @@
         padding: 2rem;
         border-radius: 0 0 1rem 1rem;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        position: relative;
+      }
+
+      .carousel {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .carousel-track {
+        display: flex;
+        transition: transform 0.5s ease-in-out;
       }
 
       .review-card {
         background: white;
         padding: 1.5rem;
-        margin-bottom: 1rem;
         border-radius: 0.5rem;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        transition: box-shadow 0.3s;
+        flex-shrink: 0;
+        width: 100%;
       }
 
-      .review-card:hover {
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+      .carousel-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: white;
+        border: none;
+        border-radius: 50%;
+        width: 3rem;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s;
+        z-index: 10;
+      }
+
+      .carousel-nav:hover {
+        background: #f3f4f6;
+      }
+
+      .carousel-nav.prev {
+        left: -1rem;
+      }
+
+      .carousel-nav.next {
+        right: -1rem;
+      }
+
+      .carousel-dots {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 1.5rem;
+      }
+
+      .dot {
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        background: #d1d5db;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .dot.active {
+        width: 2rem;
+        background: #2563eb;
+        border-radius: 0.25rem;
+      }
+
+      .carousel-counter {
+        text-align: center;
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin-top: 1rem;
       }
 
       .review-header {
@@ -158,6 +225,10 @@
       .review-text {
         color: #374151;
         line-height: 1.625;
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
       }
 
       .loading {
@@ -215,6 +286,8 @@
 
       // SVG Icons as strings
       const starIcon = `<svg class="star" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+      const chevronLeft = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>`;
+      const chevronRight = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>`;
       const userIcon = `<svg class="avatar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
 
       function renderStars(rating, className = "star") {
@@ -253,8 +326,70 @@
             `;
       }
 
+      function updateCarousel() {
+        const track = document.querySelector(".carousel-track");
+        const dots = document.querySelectorAll(".dot");
+        const counter = document.querySelector(".carousel-counter");
+
+        if (track) {
+          track.style.transform = `translateX(-${currentIndex * 100}%)`;
+        }
+
+        dots.forEach((dot, index) => {
+          dot.classList.toggle("active", index === currentIndex);
+        });
+
+        if (counter) {
+          counter.textContent = `${currentIndex + 1} of ${reviewsData.length}`;
+        }
+      }
+
+      function nextReview() {
+        currentIndex = (currentIndex + 1) % reviewsData.length;
+        updateCarousel();
+      }
+
+      function prevReview() {
+        currentIndex =
+          (currentIndex - 1 + reviewsData.length) % reviewsData.length;
+        updateCarousel();
+      }
+
+      function goToReview(index) {
+        currentIndex = index;
+        updateCarousel();
+      }
+
+      function startAutoScroll() {
+        if (autoScrollInterval) clearInterval(autoScrollInterval);
+        if (reviewsData.length <= 1) return;
+
+        autoScrollInterval = setInterval(() => {
+          if (!isPaused) {
+            nextReview();
+          }
+        }, 5000);
+      }
+
+      function stopAutoScroll() {
+        if (autoScrollInterval) {
+          clearInterval(autoScrollInterval);
+          autoScrollInterval = null;
+        }
+      }
+
+      function pauseAutoScroll() {
+        isPaused = true;
+      }
+
+      function resumeAutoScroll() {
+        isPaused = false;
+      }
+
       function renderContent(data) {
-        const reviewsHtml = data.reviews.map(renderReviewCard).join("");
+        reviewsData = data.reviews || [];
+        const reviewsHtml = reviewsData.map(renderReviewCard).join("");
+        const hasMultiple = reviewsData.length > 1;
 
         return `
                 <div class="header">
@@ -269,7 +404,39 @@
                     </div>
                 </div>
                 <div class="reviews-container">
-                    ${reviewsHtml || '<p style="text-align: center; color: #6b7280;">No reviews available</p>'}
+                    ${
+                      reviewsData.length === 0
+                        ? '<p style="text-align: center; color: #6b7280;">No reviews available</p>'
+                        : `
+                        <div class="carousel">
+                            <div class="carousel-track">
+                                ${reviewsHtml}
+                            </div>
+                            ${
+                              hasMultiple
+                                ? `
+                                <button class="carousel-nav prev" onclick="prevReview()" aria-label="Previous review">
+                                    ${chevronLeft}
+                                </button>
+                                <button class="carousel-nav next" onclick="nextReview()" aria-label="Next review">
+                                    ${chevronRight}
+                                </button>
+                            `
+                                : ""
+                            }
+                        </div>
+                        ${
+                          hasMultiple
+                            ? `
+                            <div class="carousel-dots">
+                                ${reviewsData.map((_, i) => `<button class="dot ${i === 0 ? "active" : ""}" onclick="goToReview(${i})" aria-label="Go to review ${i + 1}"></button>`).join("")}
+                            </div>
+                            <div class="carousel-counter">1 of ${reviewsData.length}</div>
+                        `
+                            : ""
+                        }
+                    `
+                    }
                 </div>
             `;
       }
@@ -286,6 +453,7 @@
 
           const data = await response.json();
           app.innerHTML = renderContent(data);
+          startAutoScroll();
         } catch (error) {
           app.innerHTML = `
                     <div class="error">

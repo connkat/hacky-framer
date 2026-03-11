@@ -8,9 +8,15 @@ export async function GET(request: NextRequest) {
     const placeId = queryPlaceId || envPlaceId;
     const forceRefresh = request.nextUrl.searchParams.get('refresh') === 'true';
 
+    console.log('=== API Route Debug ===');
+    console.log('Query placeId:', queryPlaceId);
+    console.log('Env GOOGLE_PLACE_ID:', envPlaceId ? 'SET' : 'NOT SET');
+    console.log('Final placeId:', placeId);
+
     if (!placeId) {
+      console.error('❌ Missing Place ID');
       return NextResponse.json(
-        { error: 'placeId is required. Set GOOGLE_PLACE_ID in .env or pass as query parameter' },
+        { error: 'Missing Place ID', message: 'Set GOOGLE_PLACE_ID in your .env.local file' },
         { status: 400 }
       );
     }
@@ -18,11 +24,14 @@ export async function GET(request: NextRequest) {
     const apiKey = process.env.GOOGLE_PLACES_API_KEY;
 
     if (!apiKey) {
+      console.error('❌ Missing API Key');
       return NextResponse.json(
-        { error: 'API key not configured. Set GOOGLE_PLACES_API_KEY in .env' },
+        { error: 'Missing API Key', message: 'Set GOOGLE_PLACES_API_KEY in your .env.local file' },
         { status: 500 }
       );
     }
+
+    console.log('API Key:', apiKey ? 'SET' : 'NOT SET');
 
     const cacheKey = `reviews-${placeId}`;
 
@@ -44,9 +53,16 @@ export async function GET(request: NextRequest) {
 
     const data = await response.json();
 
+    console.log('Google API Response Status:', data.status);
+
     if (data.status !== 'OK') {
+      console.error('❌ Google API Error:', data.status, data.error_message);
       return NextResponse.json(
-        { error: data.status, message: data.error_message },
+        {
+          error: `Google API Error: ${data.status}`,
+          message: data.error_message || 'Invalid Place ID or API configuration',
+          details: data
+        },
         { status: 400 }
       );
     }
@@ -66,9 +82,13 @@ export async function GET(request: NextRequest) {
       cached: false,
     });
   } catch (error) {
-    console.error('Error fetching reviews:', error);
+    console.error('❌ Unexpected error fetching reviews:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch reviews' },
+      {
+        error: 'Server Error',
+        message: error instanceof Error ? error.message : 'Failed to fetch reviews',
+        details: String(error)
+      },
       { status: 500 }
     );
   }
