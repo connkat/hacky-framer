@@ -97,13 +97,16 @@ export default function ReviewsDisplay({
     return null;
   }
 
+  // Filter for only 5-star reviews
+  const fiveStarReviews = data.reviews.filter((review) => review.rating === 5);
+
   const nextReview = () => {
-    setCurrentIndex((prev) => (prev + 1) % data.reviews.length);
+    setCurrentIndex((prev) => (prev + 1) % fiveStarReviews.length);
   };
 
   const prevReview = () => {
     setCurrentIndex(
-      (prev) => (prev - 1 + data.reviews.length) % data.reviews.length,
+      (prev) => (prev - 1 + fiveStarReviews.length) % fiveStarReviews.length,
     );
   };
 
@@ -112,9 +115,11 @@ export default function ReviewsDisplay({
   };
 
   return (
-    <div className={`w-full ${compact ? "max-w-xl" : "max-w-2xl"} mx-auto`}>
+    <div
+      className={`w-full ${compact ? "max-w-xl" : "max-w-2xl"} mx-auto px-12 md:px-16`}
+    >
       <div className="bg-white rounded-2xl p-8 shadow-lg">
-        {data.reviews.length === 0 ? (
+        {fiveStarReviews.length === 0 ? (
           <p className="text-center text-gray-500 py-8">No reviews available</p>
         ) : (
           <div
@@ -128,7 +133,7 @@ export default function ReviewsDisplay({
                 className="flex transition-transform duration-500 ease-in-out"
                 style={{ transform: `translateX(-${currentIndex * 100}%)` }}
               >
-                {data.reviews.map((review, index) => (
+                {fiveStarReviews.map((review, index) => (
                   <div key={index} className="w-full flex-shrink-0">
                     <ReviewCard review={review} />
                   </div>
@@ -137,7 +142,7 @@ export default function ReviewsDisplay({
             </div>
 
             {/* Navigation Arrows */}
-            {data.reviews.length > 1 && (
+            {fiveStarReviews.length > 1 && (
               <>
                 <button
                   onClick={prevReview}
@@ -157,9 +162,9 @@ export default function ReviewsDisplay({
             )}
 
             {/* Dots Indicator */}
-            {data.reviews.length > 1 && (
+            {fiveStarReviews.length > 1 && (
               <div className="flex justify-center gap-2 mt-6">
-                {data.reviews.map((_, index) => (
+                {fiveStarReviews.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => goToReview(index)}
@@ -175,9 +180,9 @@ export default function ReviewsDisplay({
             )}
 
             {/* Review Counter */}
-            {data.reviews.length > 1 && (
+            {fiveStarReviews.length > 1 && (
               <p className="text-center text-gray-500 text-sm mt-4">
-                {currentIndex + 1} of {data.reviews.length}
+                {currentIndex + 1} of {fiveStarReviews.length}
               </p>
             )}
           </div>
