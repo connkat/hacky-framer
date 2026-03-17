@@ -11,32 +11,42 @@
         box-sizing: border-box;
       }
 
+      html,
+      body {
+        width: 100%;
+        height: 200vh;
+        margin: 0;
+        padding: 0;
+      }
+
+      @media (min-width: 768px) {
+        html,
+        body {
+          height: 100vh;
+        }
+      }
+
       body {
         font-family:
           -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           "Helvetica Neue", Arial, sans-serif;
         background: #ffffff;
-        padding: 1rem;
+        display: flex;
+        flex-direction: column;
       }
 
       .container {
-        max-width: 672px;
-        margin: 0 auto;
-        padding: 0 3rem;
-      }
-
-      @media (min-width: 768px) {
-        .container {
-          padding: 0 4rem;
-        }
+        width: 100%;
+        display: flex;
+        flex-direction: column;
       }
 
       .reviews-container {
         background: #ffffff;
-        padding: 2rem;
-        border-radius: 1rem;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         position: relative;
+        display: flex;
+        flex-direction: column;
       }
 
       .carousel {
@@ -59,46 +69,32 @@
       }
 
       .carousel-nav {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        background: white;
+        background: none;
         border: none;
-        border-radius: 50%;
-        width: 3rem;
-        height: 3rem;
-        display: none;
-        align-items: center;
-        justify-content: center;
         cursor: pointer;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: background-color 0.3s;
-        z-index: 10;
+        opacity: 1;
+        transition: opacity 0.3s;
+        display: flex;
+        align-items: center;
+        padding: 0;
       }
 
       .carousel-nav:hover {
-        background: #f3f4f6;
+        opacity: 0.6;
       }
 
-      .carousel-nav.prev {
-        left: -1rem;
-      }
-
-      .carousel-nav.next {
-        right: -1rem;
-      }
-
-      @media (min-width: 768px) {
-        .carousel-nav {
-          display: flex;
-        }
+      .carousel-controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: auto;
+        padding-top: 1.5rem;
       }
 
       .carousel-dots {
         display: flex;
         justify-content: center;
         gap: 0.5rem;
-        margin-top: 1.5rem;
       }
 
       .dot {
@@ -211,7 +207,7 @@
         color: #374151;
         line-height: 1.625;
         display: -webkit-box;
-        -webkit-line-clamp: 4;
+        -webkit-line-clamp: 10;
         -webkit-box-orient: vertical;
         overflow: hidden;
       }
@@ -395,26 +391,24 @@
                             <div class="carousel-track">
                                 ${reviewsHtml}
                             </div>
-                            ${
-                              hasMultiple
-                                ? `
-                                <button class="carousel-nav prev" onclick="prevReview()" aria-label="Previous review">
-                                    ${chevronLeft}
-                                </button>
-                                <button class="carousel-nav next" onclick="nextReview()" aria-label="Next review">
-                                    ${chevronRight}
-                                </button>
-                            `
-                                : ""
-                            }
                         </div>
                         ${
                           hasMultiple
                             ? `
-                            <div class="carousel-dots">
-                                ${reviewsData.map((_, i) => `<button class="dot ${i === 0 ? "active" : ""}" onclick="goToReview(${i})" aria-label="Go to review ${i + 1}"></button>`).join("")}
+                            <div class="carousel-controls">
+                                <button class="carousel-nav prev" onclick="prevReview()" aria-label="Previous review">
+                                    ${chevronLeft}
+                                </button>
+                                <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;">
+                                    <div class="carousel-dots">
+                                        ${reviewsData.map((_, i) => `<button class="dot ${i === 0 ? "active" : ""}" onclick="goToReview(${i})" aria-label="Go to review ${i + 1}"></button>`).join("")}
+                                    </div>
+                                    <div class="carousel-counter">1 of ${reviewsData.length}</div>
+                                </div>
+                                <button class="carousel-nav next" onclick="nextReview()" aria-label="Next review">
+                                    ${chevronRight}
+                                </button>
                             </div>
-                            <div class="carousel-counter">1 of ${reviewsData.length}</div>
                         `
                             : ""
                         }

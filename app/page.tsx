@@ -15,7 +15,7 @@ export default function Home() {
     typeof window !== "undefined" ? `${window.location.origin}/embed` : "";
 
   return (
-    <div className="h-full w-full flex flex-col bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="h-full w-full flex flex-col bg-linear-to-br from-gray-50 to-gray-100">
       <div className="w-full flex flex-col flex-1 overflow-hidden">
         <div>
           <div className="bg-white shadow-lg p-6">

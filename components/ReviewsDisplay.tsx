@@ -123,12 +123,12 @@ export default function ReviewsDisplay({
           <p className="text-center text-gray-500 py-8">No reviews available</p>
         ) : (
           <div
-            className="relative"
+            className="flex flex-col h-full"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
           >
             {/* Carousel Container */}
-            <div className="overflow-hidden">
+            <div className="overflow-hidden flex-1">
               <div
                 className="flex transition-transform duration-500 ease-in-out"
                 style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -141,49 +141,45 @@ export default function ReviewsDisplay({
               </div>
             </div>
 
-            {/* Navigation Arrows */}
+            {/* Bottom Controls */}
             {fiveStarReviews.length > 1 && (
-              <>
+              <div className="flex items-center justify-between mt-auto pt-6">
                 <button
                   onClick={prevReview}
-                  className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors z-10 items-center justify-center"
+                  className="hover:opacity-60 transition-opacity"
                   aria-label="Previous review"
                 >
-                  <ChevronLeft className="w-6 h-6 text-gray-700" />
+                  <ChevronLeft className="w-8 h-8 text-gray-700" />
                 </button>
+
+                <div className="flex flex-col items-center gap-2">
+                  <div className="flex gap-2">
+                    {fiveStarReviews.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => goToReview(index)}
+                        className={`h-2 rounded-full transition-all ${
+                          index === currentIndex
+                            ? "w-8 bg-blue-600"
+                            : "w-2 bg-gray-300 hover:bg-gray-400"
+                        }`}
+                        aria-label={`Go to review ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-gray-500 text-sm">
+                    {currentIndex + 1} of {fiveStarReviews.length}
+                  </p>
+                </div>
+
                 <button
                   onClick={nextReview}
-                  className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors z-10 items-center justify-center"
+                  className="hover:opacity-60 transition-opacity"
                   aria-label="Next review"
                 >
-                  <ChevronRight className="w-6 h-6 text-gray-700" />
+                  <ChevronRight className="w-8 h-8 text-gray-700" />
                 </button>
-              </>
-            )}
-
-            {/* Dots Indicator */}
-            {fiveStarReviews.length > 1 && (
-              <div className="flex justify-center gap-2 mt-6">
-                {fiveStarReviews.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => goToReview(index)}
-                    className={`h-2 rounded-full transition-all ${
-                      index === currentIndex
-                        ? "w-8 bg-blue-600"
-                        : "w-2 bg-gray-300 hover:bg-gray-400"
-                    }`}
-                    aria-label={`Go to review ${index + 1}`}
-                  />
-                ))}
               </div>
-            )}
-
-            {/* Review Counter */}
-            {fiveStarReviews.length > 1 && (
-              <p className="text-center text-gray-500 text-sm mt-4">
-                {currentIndex + 1} of {fiveStarReviews.length}
-              </p>
             )}
           </div>
         )}
