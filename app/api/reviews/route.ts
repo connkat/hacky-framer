@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     if (!forceRefresh) {
       const cachedData = await getCache(cacheKey);
       if (cachedData) {
-        console.log('Returning cached reviews for', placeId);
+        console.log('Returning cached reviews');
         return NextResponse.json({
           ...cachedData,
           cached: true,
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    console.log('Fetching fresh reviews from Google API for', placeId);
+    console.log('Fetching fresh reviews from Google API');
     const response = await fetch(
       `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,rating,reviews,user_ratings_total,formatted_address&key=${apiKey}`
     );

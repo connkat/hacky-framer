@@ -15,10 +15,10 @@ export default function Home() {
     typeof window !== "undefined" ? `${window.location.origin}/embed` : "";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-2xl mx-auto mb-12">
-          <div className="bg-white rounded-xl shadow-lg p-6">
+    <div className="h-full w-full flex flex-col bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="w-full flex flex-col flex-1 overflow-hidden">
+        <div>
+          <div className="bg-white shadow-lg p-6">
             <button
               onClick={handleLoadReviews}
               className="w-full px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-medium text-lg"
@@ -54,7 +54,7 @@ export default function Home() {
         </div>
 
         {activeView && (
-          <div className="mb-12">
+          <div className="flex-1 overflow-hidden">
             <ReviewsDisplay placeId="" />
           </div>
         )}
