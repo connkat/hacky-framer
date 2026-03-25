@@ -61,7 +61,7 @@
 
       .review-card {
         background: white;
-        padding: 1.5rem;
+        padding: 1.5rem 1.5rem 0.5rem;
         border-radius: 0.5rem;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         flex-shrink: 0;
@@ -88,7 +88,7 @@
         align-items: center;
         justify-content: space-between;
         margin-top: auto;
-        padding-top: 1.5rem;
+        padding-top: 0.5rem;
       }
 
       .carousel-dots {
@@ -206,10 +206,8 @@
       .review-text {
         color: #374151;
         line-height: 1.625;
-        display: -webkit-box;
-        -webkit-line-clamp: 10;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+        max-height: 12rem;
+        overflow-y: auto;
       }
 
       .loading {
